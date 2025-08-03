@@ -54,7 +54,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
         _;
     }
 
-    modifier contractExists(bytes32 contractId) {
+    modifier contractMustExist(bytes32 contractId) {
         if (contracts[contractId].state == HTLCState.INVALID) {
             revert HTLCNotFound(contractId);
         }
@@ -188,7 +188,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
         external 
         nonReentrant 
         whenNotPaused
-        contractExists(contractId) 
+        contractMustExist(contractId) 
         inState(contractId, HTLCState.ACTIVE) 
     {
         HTLCContract storage htlc = contracts[contractId];
@@ -226,7 +226,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
         external 
         nonReentrant 
         whenNotPaused
-        contractExists(contractId) 
+        contractMustExist(contractId) 
         inState(contractId, HTLCState.ACTIVE) 
     {
         HTLCContract storage htlc = contracts[contractId];
@@ -256,7 +256,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
     function getHTLC(bytes32 contractId) 
         external 
         view 
-        contractExists(contractId) 
+        contractMustExist(contractId) 
         returns (HTLCContract memory contract_) 
     {
         return contracts[contractId];
@@ -291,7 +291,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
     function hasTimelockExpired(bytes32 contractId) 
         external 
         view 
-        contractExists(contractId) 
+        contractMustExist(contractId) 
         returns (bool expired) 
     {
         return block.timestamp >= contracts[contractId].timelock;
@@ -394,7 +394,7 @@ contract CrossChainHTLC is ICrossChainHTLC, ReentrancyGuard, Ownable, Pausable {
         external 
         onlyOwner 
         whenPaused 
-        contractExists(contractId) 
+        contractMustExist(contractId) 
     {
         HTLCContract storage htlc = contracts[contractId];
         require(htlc.state == HTLCState.ACTIVE, "Contract not active");
